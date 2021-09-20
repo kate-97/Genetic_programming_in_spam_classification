@@ -31,7 +31,7 @@ if __name__ == '__main__':
             # execute_and_evaluate_the_best(df, 5000, 0.05, 400, 1, i=2,  logf=f)
             # execute_and_evaluate_the_best(df, 2000, 0.05, 400, 50, i=3, logf=f)
             # execute_and_evaluate_the_best(df, 2000, 0.1, 400, 50, i=4, logf=f)
-            execute_and_evaluate_the_best(df, 1500, 0.05, 200, 2, i=7, logf=f)
+            # execute_and_evaluate_the_best(df, 1500, 0.05, 200, 2, i=7, logf=f)
 
             # execute_genetic_algorithm(df, 2000, 0.05, 400, 20, f)
             # execute_genetic_algorithm(df, 5000,0.05,400,1, f)

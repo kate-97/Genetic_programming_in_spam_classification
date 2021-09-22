@@ -193,6 +193,39 @@ def visualise_results(i, y_true, y_predicted):
     plt.show()
 
 
+def ensemble_classification(population, instance, means):
+    for_positive = 0
+    for_negative = 0
+
+    for individual in population:
+        assigned_class = individual.chromosome.classify_mail(instance, means)
+
+        if assigned_class == 1:
+            for_positive += 1
+        else:
+            for_negative += 1
+
+    if for_positive > for_negative:
+        return 1
+    else:
+        return 0
+
+
+def evaluate_ensemble(population, data, means):
+    print ("** Ensemble results **")
+    all_instances = data.shape[0]
+    predicted_classes = []
+
+    for i in range(all_instances):
+        predicted_classes.append(ensemble_classification(population,
+            data.iloc[i,:], means))
+
+    print("Accuracy: " + str(accuracy_score(data['class'], predicted_classes)))
+    print("Precision: " + str(precision_score(data['class'], predicted_classes)))
+    print("F score: " + str(f1_score(data['class'], predicted_classes)))
+    print("Matrix confusion: \n" + str(confusion_matrix(data['class'], predicted_classes)))
+    print("****")
+
 def execute_and_evaluate_the_best(data, population_size, pm, elitism_number,
                                   number_of_iterations, i, logf=None):
     y = data['class']
@@ -204,6 +237,7 @@ def execute_and_evaluate_the_best(data, population_size, pm, elitism_number,
     means_vector = X_train[X_train['class'] == 1].mean()  # HACK
     y_test_predicted = evaluate_classifier(population[0].chromosome, means_vector, X_test, logf)
     visualise_results(i, y_test, y_test_predicted)
+    evaluate_ensemble(population[:(elitism_number//4)], pd.DataFrame(X_test, columns=data.columns) , means_vector)
 
 
 def demonstrate_without_gp(n, data, used_features, logf=None):

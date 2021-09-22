@@ -22,7 +22,7 @@ class Individual:
 
         for i in range(all_instances):
             predicted = self.chromosome.classify_mail(data.iloc[i ,:], means_vector)
-            true_class = int(data.iloc[i ,:]['class'])
+            true_class = int(data.iloc[i,:]['class'])
 
             if predicted == true_class:
                 correct += 1
@@ -46,19 +46,48 @@ def initialize_population(features, population_size):
     return population
 
 
+def choose_position_for_mutation(individual):
+    position = np.random.randint(0, (2 ** (MAX_DEPTH + 1) - 1))
+    chosen = individual.chromosome.tree[position]
+
+    while chosen is None:
+        position = np.random.randint(0, (2 ** (MAX_DEPTH + 1) - 1))
+        chosen = individual.chromosome.tree[position]
+
+    return position
+
+
 def mutate(individual):
-    position = np.random.randint(0, 15)
-    depth = np.floor(np.log2(position + 1))
-    individual.chromosome.tree[position] = np.random.randint(0, len(individual.features) - depth)
+    position = choose_position_for_mutation(individual)
+
+    if type(individual.chromosome.tree[position]) is int:
+        depth = np.floor(np.log2(position + 1))
+        individual.chromosome.tree[position] = np.random.randint(0, len(individual.features) - depth)
+
+    elif type(individual.chromosome.tree[position]) is str:
+        individual.chromosome.tree[position] = str(np.random.choice(['1', '0']))
 
     return individual
+
+
+def choose_position_for_cross_over(individual1, individual2):
+    position = np.random.randint(0, (2 ** (MAX_DEPTH + 1) - 1))
+    chosen1 = individual1.chromosome.tree[position]
+    chosen2 = individual2.chromosome.tree[position]
+
+    while chosen1 is None or chosen2 is None:
+        position = np.random.randint(0, (2 ** (MAX_DEPTH + 1) - 1))
+        chosen1 = individual1.chromosome.tree[position]
+        chosen2 = individual2.chromosome.tree[position]
+
+    return position
 
 
 def get_positions_in_subtree__(position, positions):
     positions.append(2 * position + 1)
     positions.append(2 * position + 2)
 
-    if 2 * position + 1 < 15:
+    if 2 * position + 1 < ((2 ** (MAX_DEPTH + 1) - 1) - 1):
         positions = get_positions_in_subtree__(2 * position + 1, positions)
         positions = get_positions_in_subtree__(2 * position + 2, positions)
 
@@ -68,17 +97,17 @@ def get_positions_in_subtree__(position, positions):
 def get_positions_in_subtree(position):
     positions = [position]
 
-    if position < 15:
-        positions = get_positions_in_subtree__(position, positions)
+    if position < 2 ** MAX_DEPTH - 1:
+        get_positions_in_subtree__(position, positions)
 
     return positions
 
 
 def cross_over(individual1, individual2, child1, child2):
-    position = np.random.randint(0, 15)
+    position = choose_position_for_cross_over(individual1, individual2)
     positions_in_subtree = get_positions_in_subtree(position)
 
-    for i in range(0, 31):
+    for i in range(0, 2 ** (MAX_DEPTH + 1) - 1):
         if i in positions_in_subtree:
             child1.chromosome.tree[i] = individual2.chromosome.tree[i]
             child2.chromosome.tree[i] = individual1.chromosome.tree[i]

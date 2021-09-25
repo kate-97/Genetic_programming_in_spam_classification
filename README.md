@@ -9,3 +9,5 @@ U ovom radu smo pokušali da uz drugačiju primenu metaheuristike genetskog prog
 
 Autor:
   :mortar_board: Milena Stojić, 96/2016
+  
+*TODO:* Dodavanje konačnih eksperimentalnih rezultata, popravka formatiranja i pisma i prezentacija.

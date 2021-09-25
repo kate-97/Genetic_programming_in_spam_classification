@@ -1,0 +1,19 @@
+####################
+	 Number of iterations: 10
+	 Population size: 100
+	 Probability of mutation (pm) : 0.05
+	 Number of elite individuals: 20
+
+
+ ** The best value of fitness function in population:
+ (that is, the best accuracy in population): 0.765527950310559
+Average fitness (average accuracy) is: 0.712742236024844
+####################
+***** Classification results: *****
+   Accuracy: 0.6350470673425054
+   Precision: 0.5597014925373134
+   F score: 0.5434782608695652
+Matrix confusion: 
+
+[[577 236]
+ [268 300]]**********

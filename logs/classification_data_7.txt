@@ -1,0 +1,10 @@
+####################
+	 Number of iterations: 2
+	 Population size: 1500
+	 Probability of mutation (pm) : 0.05
+	 Number of elite individuals: 200
+####################
+	 Number of iterations: 20
+	 Population size: 2000
+	 Probability of mutation (pm) : 0.05
+	 Number of elite individuals: 400

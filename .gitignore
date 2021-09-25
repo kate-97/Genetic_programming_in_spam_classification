@@ -1,6 +1,4 @@
-graphs/
-data/
-logs/
+
 other/
 *.png
 __pycache__

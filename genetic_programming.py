@@ -6,22 +6,20 @@ from decision_tree import *
 
 
 class Individual:
-    def __init__(self, features):
+    def __init__(self, data, features):
         self.features = features
-        self.chromosome = decision_tree(features)
+        self.chromosome = decision_tree(data, features)
         self.fitness = 0.0
 
     def __lt__(self, other):
         return self.fitness >= other.fitness
 
     def get_accuracy(self, data):
-        means_vector = data[data['class'] == 1][self.features].mean()
-
         all_instances = data.shape[0]
         correct = 0
 
         for i in range(all_instances):
-            predicted = self.chromosome.classify_mail(data.iloc[i ,:], means_vector)
+            predicted = self.chromosome.classify_mail(data.iloc[i ,:])
             true_class = int(data.iloc[i,:]['class'])
 
             if predicted == true_class:
@@ -37,11 +35,11 @@ class Individual:
         return str(self.fitness) + " "
 
 
-def initialize_population(features, population_size):
+def initialize_population(data, features, population_size):
     population = [None] * population_size
 
     for i in range(population_size):
-        population[i] = Individual(features)
+        population[i] = Individual(data, features)
 
     return population
 

@@ -43,8 +43,10 @@ class decision_tree:
 
         self._initialize_features(i=0, depth=1)
 
-    def __init__(self, features):
+    def __init__(self, data, features):
         self.tree = [None] * (2 ** (MAX_DEPTH + 1) - 1)
+
+        self.means = data[data['class'] == 1][features].mean()
         self.features = features
         self.number_of_features = len(features)
 
@@ -59,7 +61,7 @@ class decision_tree:
 
         return s
 
-    def classify_mail(self, instance, means):
+    def classify_mail(self, instance):
         features_at_depth = copy.deepcopy(self.features)
         position = 0
 
@@ -68,7 +70,7 @@ class decision_tree:
             get_feature = features_at_depth[feature_index]
             features_at_depth.remove(get_feature)
 
-            if instance[get_feature] > means[get_feature]:
+            if instance[get_feature] > self.means[get_feature]:
                 position = 2 * position + 1
 
             else:

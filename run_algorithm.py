@@ -38,7 +38,7 @@ def execute_genetic_algorithm(data, population_size, pm, elitism_number,
 
     used_features = feature_selection(data)
 
-    population = initialize_population(used_features, population_size)
+    population = initialize_population(data, used_features, population_size)
     next_population = copy.deepcopy(population)
 
     current_iteration = 0
@@ -103,14 +103,14 @@ def execute_genetic_algorithm(data, population_size, pm, elitism_number,
 
 
 # TODO: Eventualno jos neku vizualizaciju
-def evaluate_classifier(classifier, means_vector, data, logf=None):
+def evaluate_classifier(classifier, data, logf=None):
     all_instances = data.shape[0]
 
     predicted_classes = []
     true_classes = []
 
     for i in range(all_instances):
-        predicted = classifier.classify_mail(data.iloc[i, :], means_vector)
+        predicted = classifier.classify_mail(data.iloc[i, :])
         true_class = data.iloc[i, :]['class']
 
         predicted_classes.append(predicted)
@@ -193,12 +193,12 @@ def visualise_results(i, y_true, y_predicted):
     plt.show()
 
 
-def ensemble_classification(population, instance, means):
+def ensemble_classification(population, instance):
     for_positive = 0
     for_negative = 0
 
     for individual in population:
-        assigned_class = individual.chromosome.classify_mail(instance, means)
+        assigned_class = individual.chromosome.classify_mail(instance)
 
         if assigned_class == 1:
             for_positive += 1
@@ -211,20 +211,21 @@ def ensemble_classification(population, instance, means):
         return 0
 
 
-def evaluate_ensemble(population, data, means):
+def evaluate_ensemble(population, data):
     print ("** Ensemble results **")
     all_instances = data.shape[0]
     predicted_classes = []
 
     for i in range(all_instances):
         predicted_classes.append(ensemble_classification(population,
-            data.iloc[i,:], means))
+            data.iloc[i,:]))
 
     print("Accuracy: " + str(accuracy_score(data['class'], predicted_classes)))
     print("Precision: " + str(precision_score(data['class'], predicted_classes)))
     print("F score: " + str(f1_score(data['class'], predicted_classes)))
     print("Matrix confusion: \n" + str(confusion_matrix(data['class'], predicted_classes)))
     print("****")
+
 
 def execute_and_evaluate_the_best(data, population_size, pm, elitism_number,
                                   number_of_iterations, i, logf=None):
@@ -234,10 +235,9 @@ def execute_and_evaluate_the_best(data, population_size, pm, elitism_number,
     population = execute_genetic_algorithm(X_train, population_size, pm, elitism_number,
                                            number_of_iterations, output=False, logf=logf)
 
-    means_vector = X_train[X_train['class'] == 1].mean()  # HACK
-    y_test_predicted = evaluate_classifier(population[0].chromosome, means_vector, X_test, logf)
+    y_test_predicted = evaluate_classifier(population[0].chromosome, X_test, logf)
     visualise_results(i, y_test, y_test_predicted)
-    evaluate_ensemble(population[:(elitism_number//4)], pd.DataFrame(X_test, columns=data.columns) , means_vector)
+    evaluate_ensemble(population[:(elitism_number//4)], pd.DataFrame(X_test, columns=data.columns))
 
 
 def demonstrate_without_gp(n, data, used_features, logf=None):
@@ -245,13 +245,12 @@ def demonstrate_without_gp(n, data, used_features, logf=None):
     max_of_fitnesses = 0.0
 
     all_instances = data.shape[0]
-    means_vector = data[data['class'] == 1][used_features].mean()
 
     for j in range(n):
         correct = 0
         s = decision_tree(used_features)
         for i in range(all_instances):
-            predicted = s.classify_mail(data.iloc[i, :], means_vector)
+            predicted = s.classify_mail(data.iloc[i, :])
             true_class = int(data.iloc[i, :]['class'])
 
             if predicted == true_class:
